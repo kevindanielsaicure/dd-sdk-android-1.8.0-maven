@@ -1,0 +1,918 @@
+object com.datadog.android.Datadog
+  DEPRECATED fun initialize(android.content.Context, DatadogConfig)
+  DEPRECATED fun initialize(android.content.Context, com.datadog.android.privacy.TrackingConsent, DatadogConfig)
+  fun initialize(android.content.Context, com.datadog.android.core.configuration.Credentials, com.datadog.android.core.configuration.Configuration, com.datadog.android.privacy.TrackingConsent)
+  fun isInitialized(): Boolean
+  fun clearAllData()
+  fun setVerbosity(Int)
+  fun setTrackingConsent(com.datadog.android.privacy.TrackingConsent)
+  fun setUserInfo(String? = null, String? = null, String? = null, Map<String, Any?> = emptyMap())
+DEPRECATED class com.datadog.android.DatadogConfig
+  DEPRECATED class Builder
+    constructor(String, String, java.util.UUID)
+    constructor(String, String)
+    constructor(String, String, String)
+    fun build(): DatadogConfig
+    fun setLogsEnabled(Boolean): Builder
+    fun setTracesEnabled(Boolean): Builder
+    fun setCrashReportsEnabled(Boolean): Builder
+    fun setRumEnabled(Boolean): Builder
+    fun setServiceName(String): Builder
+    DEPRECATED fun setEnvironmentName(String): Builder
+    fun setFirstPartyHosts(List<String>): Builder
+    fun useEUEndpoints(): Builder
+    fun useUSEndpoints(): Builder
+    fun useGovEndpoints(): Builder
+    fun useCustomLogsEndpoint(String): Builder
+    fun useCustomTracesEndpoint(String): Builder
+    fun useCustomCrashReportsEndpoint(String): Builder
+    fun useCustomRumEndpoint(String): Builder
+    fun trackInteractions(Array<com.datadog.android.rum.tracking.ViewAttributesProvider> = emptyArray()): Builder
+    fun useViewTrackingStrategy(com.datadog.android.rum.tracking.ViewTrackingStrategy): Builder
+    fun addPlugin(com.datadog.android.plugin.DatadogPlugin, com.datadog.android.plugin.Feature): Builder
+    fun sampleRumSessions(Float): Builder
+    fun setRumViewEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ViewEvent>): Builder
+    fun setRumResourceEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ResourceEvent>): Builder
+    fun setRumActionEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ActionEvent>): Builder
+    fun setRumErrorEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ErrorEvent>): Builder
+    companion object 
+object com.datadog.android.DatadogEndpoint
+  const val LOGS_US: String
+  const val LOGS_EU: String
+  const val LOGS_GOV: String
+  const val TRACES_US: String
+  const val TRACES_EU: String
+  const val TRACES_GOV: String
+  const val RUM_US: String
+  const val RUM_EU: String
+  const val RUM_GOV: String
+  const val NTP_0: String
+  const val NTP_1: String
+  const val NTP_2: String
+  const val NTP_3: String
+class com.datadog.android.DatadogEventListener : okhttp3.EventListener
+  override fun callStart(okhttp3.Call)
+  override fun dnsStart(okhttp3.Call, String)
+  override fun dnsEnd(okhttp3.Call, String, MutableList<java.net.InetAddress>)
+  override fun connectStart(okhttp3.Call, java.net.InetSocketAddress, java.net.Proxy)
+  override fun connectEnd(okhttp3.Call, java.net.InetSocketAddress, java.net.Proxy, okhttp3.Protocol?)
+  override fun secureConnectStart(okhttp3.Call)
+  override fun secureConnectEnd(okhttp3.Call, okhttp3.Handshake?)
+  override fun responseHeadersStart(okhttp3.Call)
+  override fun responseHeadersEnd(okhttp3.Call, okhttp3.Response)
+  override fun responseBodyStart(okhttp3.Call)
+  override fun responseBodyEnd(okhttp3.Call, Long)
+  override fun callEnd(okhttp3.Call)
+  override fun callFailed(okhttp3.Call, java.io.IOException)
+  class Factory : okhttp3.EventListener.Factory
+    override fun create(okhttp3.Call): okhttp3.EventListener
+open class com.datadog.android.DatadogInterceptor : com.datadog.android.tracing.TracingInterceptor
+  constructor(List<String>, com.datadog.android.tracing.TracedRequestListener = NoOpTracedRequestListener())
+  constructor(com.datadog.android.tracing.TracedRequestListener = NoOpTracedRequestListener())
+  override fun intercept(okhttp3.Interceptor.Chain): okhttp3.Response
+  override fun onRequestIntercepted(okhttp3.Request, io.opentracing.Span?, okhttp3.Response?, Throwable?)
+  override fun canSendSpan(): Boolean
+  companion object 
+enum com.datadog.android.core.configuration.BatchSize
+  constructor(Long)
+  - SMALL
+  - MEDIUM
+  - LARGE
+class com.datadog.android.core.configuration.Configuration
+  class Builder
+    constructor(Boolean, Boolean, Boolean, Boolean)
+    fun build(): Configuration
+    fun setFirstPartyHosts(List<String>): Builder
+    fun useEUEndpoints(): Builder
+    fun useUSEndpoints(): Builder
+    fun useGovEndpoints(): Builder
+    fun useCustomLogsEndpoint(String): Builder
+    fun useCustomTracesEndpoint(String): Builder
+    fun useCustomCrashReportsEndpoint(String): Builder
+    fun useCustomRumEndpoint(String): Builder
+    fun trackInteractions(Array<com.datadog.android.rum.tracking.ViewAttributesProvider> = emptyArray()): Builder
+    fun useViewTrackingStrategy(com.datadog.android.rum.tracking.ViewTrackingStrategy): Builder
+    fun addPlugin(com.datadog.android.plugin.DatadogPlugin, com.datadog.android.plugin.Feature): Builder
+    fun setBatchSize(BatchSize): Builder
+    fun setUploadFrequency(UploadFrequency): Builder
+    fun sampleRumSessions(Float): Builder
+    fun setRumViewEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ViewEvent>): Builder
+    fun setRumResourceEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ResourceEvent>): Builder
+    fun setRumActionEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ActionEvent>): Builder
+    fun setRumErrorEventMapper(com.datadog.android.event.EventMapper<com.datadog.android.rum.model.ErrorEvent>): Builder
+  companion object 
+class com.datadog.android.core.configuration.Credentials
+  constructor(String, String, String, String?, String? = null)
+enum com.datadog.android.core.configuration.UploadFrequency
+  constructor(Long)
+  - FREQUENT
+  - AVERAGE
+  - RARE
+interface com.datadog.android.event.EventMapper<T: Any>
+  fun map(T): T?
+object com.datadog.android.log.LogAttributes
+  const val APPLICATION_PACKAGE: String
+  const val APPLICATION_VERSION: String
+  const val ENV: String
+  const val DATE: String
+  const val DB_INSTANCE: String
+  const val DB_OPERATION: String
+  const val DB_STATEMENT: String
+  const val DB_USER: String
+  const val DD_SPAN_ID: String
+  const val DD_TRACE_ID: String
+  const val DURATION: String
+  const val ERROR_KIND: String
+  const val ERROR_MESSAGE: String
+  const val ERROR_STACK: String
+  const val HOST: String
+  const val HTTP_METHOD: String
+  const val HTTP_REFERRER: String
+  const val HTTP_REQUEST_ID: String
+  const val HTTP_STATUS_CODE: String
+  const val HTTP_URL: String
+  const val HTTP_USERAGENT: String
+  const val HTTP_VERSION: String
+  const val LOGGER_METHOD_NAME: String
+  const val LOGGER_NAME: String
+  const val LOGGER_THREAD_NAME: String
+  const val LOGGER_VERSION: String
+  const val MESSAGE: String
+  const val NETWORK_CARRIER_ID: String
+  const val NETWORK_CARRIER_NAME: String
+  const val NETWORK_CLIENT_IP: String
+  const val NETWORK_CLIENT_PORT: String
+  const val NETWORK_CONNECTIVITY: String
+  const val NETWORK_DOWN_KBPS: String
+  const val NETWORK_SIGNAL_STRENGTH: String
+  const val NETWORK_UP_KBPS: String
+  const val RUM_APPLICATION_ID: String
+  const val RUM_SESSION_ID: String
+  const val RUM_VIEW_ID: String
+  const val SERVICE_NAME: String
+  const val SOURCE: String
+  const val STATUS: String
+  const val USR_EMAIL: String
+  const val USR_ID: String
+  const val USR_NAME: String
+class com.datadog.android.log.Logger
+  fun v(String, Throwable? = null, Map<String, Any?> = emptyMap())
+  fun d(String, Throwable? = null, Map<String, Any?> = emptyMap())
+  fun i(String, Throwable? = null, Map<String, Any?> = emptyMap())
+  fun w(String, Throwable? = null, Map<String, Any?> = emptyMap())
+  fun e(String, Throwable? = null, Map<String, Any?> = emptyMap())
+  fun wtf(String, Throwable? = null, Map<String, Any?> = emptyMap())
+  fun log(Int, String, Throwable? = null, Map<String, Any?> = emptyMap())
+  class Builder
+    fun build(): Logger
+    fun setServiceName(String): Builder
+    fun setDatadogLogsEnabled(Boolean): Builder
+    fun setLogcatLogsEnabled(Boolean): Builder
+    fun setNetworkInfoEnabled(Boolean): Builder
+    fun setLoggerName(String): Builder
+    fun setBundleWithTraceEnabled(Boolean): Builder
+    fun setBundleWithRumEnabled(Boolean): Builder
+    fun setSampleRate(Float): Builder
+  fun addAttribute(String, Boolean)
+  fun addAttribute(String, Int)
+  fun addAttribute(String, Long)
+  fun addAttribute(String, Float)
+  fun addAttribute(String, Double)
+  fun addAttribute(String, String?)
+  fun addAttribute(String, java.util.Date?)
+  fun addAttribute(String, com.google.gson.JsonObject?)
+  fun addAttribute(String, com.google.gson.JsonArray?)
+  fun removeAttribute(String)
+  fun addTag(String, String)
+  fun addTag(String)
+  fun removeTag(String)
+  fun removeTagsWithKey(String)
+class com.datadog.android.plugin.DatadogContext
+  constructor(DatadogRumContext? = null)
+interface com.datadog.android.plugin.DatadogPlugin : com.datadog.android.privacy.TrackingConsentProviderCallback
+  fun register(DatadogPluginConfig)
+  fun unregister()
+  fun onContextChanged(DatadogContext)
+class com.datadog.android.plugin.DatadogPluginConfig
+  constructor(android.content.Context, String, String, String, com.datadog.android.privacy.TrackingConsent)
+class com.datadog.android.plugin.DatadogRumContext
+  constructor(String? = null, String? = null, String? = null)
+enum com.datadog.android.plugin.Feature
+  constructor(String)
+  - LOG
+  - CRASH
+  - TRACE
+  - RUM
+enum com.datadog.android.privacy.TrackingConsent
+  - GRANTED
+  - NOT_GRANTED
+  - PENDING
+interface com.datadog.android.privacy.TrackingConsentProviderCallback
+  fun onConsentUpdated(TrackingConsent, TrackingConsent)
+object com.datadog.android.rum.GlobalRum
+  fun isRegistered(): Boolean
+  fun registerIfAbsent(RumMonitor): Boolean
+  fun registerIfAbsent(java.util.concurrent.Callable<RumMonitor>): Boolean
+  fun get(): RumMonitor
+  fun addAttribute(String, Any?)
+  fun removeAttribute(String)
+enum com.datadog.android.rum.RumActionType
+  - TAP
+  - SCROLL
+  - SWIPE
+  - CLICK
+  - CUSTOM
+object com.datadog.android.rum.RumAttributes
+  const val APPLICATION_VERSION: String
+  const val ENV: String
+  const val SERVICE_NAME: String
+  const val SOURCE: String
+  const val VARIANT: String
+  const val SDK_VERSION: String
+  const val INTERNAL_ERROR_TYPE: String
+  const val INTERNAL_TIMESTAMP: String
+  const val TRACE_ID: String
+  const val SPAN_ID: String
+  const val ERROR_RESOURCE_METHOD: String
+  const val ERROR_RESOURCE_STATUS_CODE: String
+  const val ERROR_RESOURCE_URL: String
+  const val ERROR_DATABASE_VERSION: String
+  const val ERROR_DATABASE_PATH: String
+  const val ACTION_TARGET_CLASS_NAME: String
+  const val ACTION_TARGET_TITLE: String
+  const val ACTION_TARGET_PARENT_INDEX: String
+  const val ACTION_TARGET_PARENT_CLASSNAME: String
+  const val ACTION_TARGET_PARENT_RESOURCE_ID: String
+  const val ACTION_TARGET_RESOURCE_ID: String
+  const val ACTION_GESTURE_DIRECTION: String
+  const val NETWORK_CARRIER_ID: String
+  const val NETWORK_CARRIER_NAME: String
+  const val NETWORK_CONNECTIVITY: String
+  const val NETWORK_DOWN_KBPS: String
+  const val NETWORK_SIGNAL_STRENGTH: String
+  const val NETWORK_UP_KBPS: String
+  const val NETWORK_BYTES_READ: String
+enum com.datadog.android.rum.RumErrorSource
+  - NETWORK
+  - SOURCE
+  - CONSOLE
+  - LOGGER
+  - AGENT
+  - WEBVIEW
+class com.datadog.android.rum.RumInterceptor : com.datadog.android.DatadogInterceptor
+  constructor(List<String> = emptyList())
+interface com.datadog.android.rum.RumMonitor
+  fun startView(Any, String, Map<String, Any?> = emptyMap())
+  fun stopView(Any, Map<String, Any?> = emptyMap())
+  fun addUserAction(RumActionType, String, Map<String, Any?>)
+  fun startUserAction(RumActionType, String, Map<String, Any?>)
+  fun stopUserAction(Map<String, Any?> = emptyMap())
+  fun stopUserAction(RumActionType, String, Map<String, Any?> = emptyMap())
+  fun startResource(String, String, String, Map<String, Any?> = emptyMap())
+  fun stopResource(String, Int?, Long?, RumResourceKind, Map<String, Any?>)
+  fun stopResourceWithError(String, Int?, String, RumErrorSource, Throwable)
+  fun addError(String, RumErrorSource, Throwable?, Map<String, Any?>)
+  fun addErrorWithStacktrace(String, RumErrorSource, String?, Map<String, Any?>)
+  fun addTiming(String)
+  class Builder
+    fun sampleRumSessions(Float): Builder
+    fun build(): RumMonitor
+    companion object 
+enum com.datadog.android.rum.RumResourceKind
+  constructor(String)
+  - BEACON
+  - FETCH
+  - XHR
+  - DOCUMENT
+  - UNKNOWN
+  - IMAGE
+  - JS
+  - FONT
+  - CSS
+  - MEDIA
+  - OTHER
+  companion object 
+class com.datadog.android.rum.model.ActionEvent
+  constructor(kotlin.Long, Application, kotlin.String? = null, Session, View, Usr? = null, Connectivity? = null, Dd, Action)
+  val type: kotlin.String
+  fun toJson(): com.google.gson.JsonElement
+  companion object 
+    fun fromJson(kotlin.String): ActionEvent
+  class Application
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Application
+  class Session
+    constructor(kotlin.String, SessionType, kotlin.Boolean? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Session
+  class View
+    constructor(kotlin.String, kotlin.String? = null, kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): View
+  class Usr
+    constructor(kotlin.String? = null, kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Usr
+  class Connectivity
+    constructor(Status, kotlin.collections.List<Interface>, Cellular? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Connectivity
+  class Dd
+    val formatVersion: kotlin.Long
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Dd
+  class Action
+    constructor(ActionType, kotlin.String? = null, kotlin.Long? = null, Target? = null, Error? = null, Crash? = null, LongTask? = null, Resource? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Action
+  class Cellular
+    constructor(kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Cellular
+  class Target
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Target
+  class Error
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Error
+  class Crash
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Crash
+  class LongTask
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): LongTask
+  class Resource
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Resource
+  enum SessionType
+    constructor(kotlin.String)
+    - USER
+    - SYNTHETICS
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): SessionType
+  enum Status
+    constructor(kotlin.String)
+    - CONNECTED
+    - NOT_CONNECTED
+    - MAYBE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Status
+  enum Interface
+    constructor(kotlin.String)
+    - BLUETOOTH
+    - CELLULAR
+    - ETHERNET
+    - WIFI
+    - WIMAX
+    - MIXED
+    - OTHER
+    - UNKNOWN
+    - NONE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Interface
+  enum ActionType
+    constructor(kotlin.String)
+    - CUSTOM
+    - CLICK
+    - TAP
+    - SCROLL
+    - SWIPE
+    - APPLICATION_START
+    - BACK
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): ActionType
+class com.datadog.android.rum.model.ErrorEvent
+  constructor(kotlin.Long, Application, kotlin.String? = null, Session, View, Usr? = null, Connectivity? = null, Dd, Error, Action? = null)
+  val type: kotlin.String
+  fun toJson(): com.google.gson.JsonElement
+  companion object 
+    fun fromJson(kotlin.String): ErrorEvent
+  class Application
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Application
+  class Session
+    constructor(kotlin.String, SessionType, kotlin.Boolean? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Session
+  class View
+    constructor(kotlin.String, kotlin.String? = null, kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): View
+  class Usr
+    constructor(kotlin.String? = null, kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Usr
+  class Connectivity
+    constructor(Status, kotlin.collections.List<Interface>, Cellular? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Connectivity
+  class Dd
+    val formatVersion: kotlin.Long
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Dd
+  class Error
+    constructor(kotlin.String, Source, kotlin.String? = null, kotlin.Boolean? = null, kotlin.String? = null, Resource? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Error
+  class Action
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Action
+  class Cellular
+    constructor(kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Cellular
+  class Resource
+    constructor(Method, kotlin.Long, kotlin.String, Provider? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Resource
+  class Provider
+    constructor(kotlin.String? = null, kotlin.String? = null, ProviderType? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Provider
+  enum SessionType
+    constructor(kotlin.String)
+    - USER
+    - SYNTHETICS
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): SessionType
+  enum Status
+    constructor(kotlin.String)
+    - CONNECTED
+    - NOT_CONNECTED
+    - MAYBE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Status
+  enum Interface
+    constructor(kotlin.String)
+    - BLUETOOTH
+    - CELLULAR
+    - ETHERNET
+    - WIFI
+    - WIMAX
+    - MIXED
+    - OTHER
+    - UNKNOWN
+    - NONE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Interface
+  enum Source
+    constructor(kotlin.String)
+    - NETWORK
+    - SOURCE
+    - CONSOLE
+    - LOGGER
+    - AGENT
+    - WEBVIEW
+    - CUSTOM
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Source
+  enum Method
+    constructor(kotlin.String)
+    - POST
+    - GET
+    - HEAD
+    - PUT
+    - DELETE
+    - PATCH
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Method
+  enum ProviderType
+    constructor(kotlin.String)
+    - AD
+    - ADVERTISING
+    - ANALYTICS
+    - CDN
+    - CONTENT
+    - CUSTOMER_SUCCESS
+    - FIRST_PARTY
+    - HOSTING
+    - MARKETING
+    - OTHER
+    - SOCIAL
+    - TAG_MANAGER
+    - UTILITY
+    - VIDEO
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): ProviderType
+class com.datadog.android.rum.model.ResourceEvent
+  constructor(kotlin.Long, Application, kotlin.String? = null, Session, View, Usr? = null, Connectivity? = null, Dd? = null, Resource, Action? = null)
+  val type: kotlin.String
+  fun toJson(): com.google.gson.JsonElement
+  companion object 
+    fun fromJson(kotlin.String): ResourceEvent
+  class Application
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Application
+  class Session
+    constructor(kotlin.String, SessionType, kotlin.Boolean? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Session
+  class View
+    constructor(kotlin.String, kotlin.String? = null, kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): View
+  class Usr
+    constructor(kotlin.String? = null, kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Usr
+  class Connectivity
+    constructor(Status, kotlin.collections.List<Interface>, Cellular? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Connectivity
+  class Dd
+    constructor(kotlin.String? = null, kotlin.String? = null)
+    val formatVersion: kotlin.Long
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Dd
+  class Resource
+    constructor(kotlin.String? = null, ResourceType, Method? = null, kotlin.String, kotlin.Long? = null, kotlin.Long, kotlin.Long? = null, Redirect? = null, Dns? = null, Connect? = null, Ssl? = null, FirstByte? = null, Download? = null, Provider? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Resource
+  class Action
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Action
+  class Cellular
+    constructor(kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Cellular
+  class Redirect
+    constructor(kotlin.Long, kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Redirect
+  class Dns
+    constructor(kotlin.Long, kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Dns
+  class Connect
+    constructor(kotlin.Long, kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Connect
+  class Ssl
+    constructor(kotlin.Long, kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Ssl
+  class FirstByte
+    constructor(kotlin.Long, kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): FirstByte
+  class Download
+    constructor(kotlin.Long, kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Download
+  class Provider
+    constructor(kotlin.String? = null, kotlin.String? = null, ProviderType? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Provider
+  enum SessionType
+    constructor(kotlin.String)
+    - USER
+    - SYNTHETICS
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): SessionType
+  enum Status
+    constructor(kotlin.String)
+    - CONNECTED
+    - NOT_CONNECTED
+    - MAYBE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Status
+  enum Interface
+    constructor(kotlin.String)
+    - BLUETOOTH
+    - CELLULAR
+    - ETHERNET
+    - WIFI
+    - WIMAX
+    - MIXED
+    - OTHER
+    - UNKNOWN
+    - NONE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Interface
+  enum ResourceType
+    constructor(kotlin.String)
+    - DOCUMENT
+    - XHR
+    - BEACON
+    - FETCH
+    - CSS
+    - JS
+    - IMAGE
+    - FONT
+    - MEDIA
+    - OTHER
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): ResourceType
+  enum Method
+    constructor(kotlin.String)
+    - POST
+    - GET
+    - HEAD
+    - PUT
+    - DELETE
+    - PATCH
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Method
+  enum ProviderType
+    constructor(kotlin.String)
+    - AD
+    - ADVERTISING
+    - ANALYTICS
+    - CDN
+    - CONTENT
+    - CUSTOMER_SUCCESS
+    - FIRST_PARTY
+    - HOSTING
+    - MARKETING
+    - OTHER
+    - SOCIAL
+    - TAG_MANAGER
+    - UTILITY
+    - VIDEO
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): ProviderType
+class com.datadog.android.rum.model.ViewEvent
+  constructor(kotlin.Long, Application, kotlin.String? = null, Session, View, Usr? = null, Connectivity? = null, Dd)
+  val type: kotlin.String
+  fun toJson(): com.google.gson.JsonElement
+  companion object 
+    fun fromJson(kotlin.String): ViewEvent
+  class Application
+    constructor(kotlin.String)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Application
+  class Session
+    constructor(kotlin.String, Type, kotlin.Boolean? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Session
+  class View
+    constructor(kotlin.String, kotlin.String? = null, kotlin.String, kotlin.Long? = null, LoadingType? = null, kotlin.Long, kotlin.Long? = null, kotlin.Long? = null, kotlin.Long? = null, kotlin.Long? = null, kotlin.Double? = null, kotlin.Long? = null, kotlin.Long? = null, kotlin.Long? = null, kotlin.Long? = null, CustomTimings? = null, kotlin.Boolean? = null, Action, Error, Crash? = null, LongTask? = null, Resource)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): View
+  class Usr
+    constructor(kotlin.String? = null, kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Usr
+  class Connectivity
+    constructor(Status, kotlin.collections.List<Interface>, Cellular? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Connectivity
+  class Dd
+    constructor(kotlin.Long)
+    val formatVersion: kotlin.Long
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Dd
+  class CustomTimings
+    constructor(kotlin.collections.Map<kotlin.String, kotlin.Long> = emptyMap())
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): CustomTimings
+  class Action
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Action
+  class Error
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Error
+  class Crash
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Crash
+  class LongTask
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): LongTask
+  class Resource
+    constructor(kotlin.Long)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Resource
+  class Cellular
+    constructor(kotlin.String? = null, kotlin.String? = null)
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Cellular
+  enum Type
+    constructor(kotlin.String)
+    - USER
+    - SYNTHETICS
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Type
+  enum LoadingType
+    constructor(kotlin.String)
+    - INITIAL_LOAD
+    - ROUTE_CHANGE
+    - ACTIVITY_DISPLAY
+    - ACTIVITY_REDISPLAY
+    - FRAGMENT_DISPLAY
+    - FRAGMENT_REDISPLAY
+    - VIEW_CONTROLLER_DISPLAY
+    - VIEW_CONTROLLER_REDISPLAY
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): LoadingType
+  enum Status
+    constructor(kotlin.String)
+    - CONNECTED
+    - NOT_CONNECTED
+    - MAYBE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Status
+  enum Interface
+    constructor(kotlin.String)
+    - BLUETOOTH
+    - CELLULAR
+    - ETHERNET
+    - WIFI
+    - WIMAX
+    - MIXED
+    - OTHER
+    - UNKNOWN
+    - NONE
+    fun toJson(): com.google.gson.JsonElement
+    companion object 
+      fun fromJson(kotlin.String): Interface
+class com.datadog.android.rum.resource.RumResourceInputStream : java.io.InputStream
+  constructor(java.io.InputStream, String)
+  override fun read(): Int
+  override fun read(ByteArray): Int
+  override fun read(ByteArray, Int, Int): Int
+  override fun available(): Int
+  override fun skip(Long): Long
+  override fun markSupported(): Boolean
+  override fun mark(Int)
+  override fun reset()
+  override fun close()
+  companion object 
+open class com.datadog.android.rum.tracking.AcceptAllActivities : ComponentPredicate<android.app.Activity>
+  override fun accept(android.app.Activity): Boolean
+  override fun getViewName(android.app.Activity): String?
+open class com.datadog.android.rum.tracking.AcceptAllDefaultFragment : ComponentPredicate<android.app.Fragment>
+  override fun accept(android.app.Fragment): Boolean
+  override fun getViewName(android.app.Fragment): String?
+open class com.datadog.android.rum.tracking.AcceptAllSupportFragments : ComponentPredicate<androidx.fragment.app.Fragment>
+  override fun accept(androidx.fragment.app.Fragment): Boolean
+  override fun getViewName(androidx.fragment.app.Fragment): String?
+abstract class com.datadog.android.rum.tracking.ActivityLifecycleTrackingStrategy : android.app.Application.ActivityLifecycleCallbacks, TrackingStrategy
+  override fun register(android.content.Context)
+  override fun unregister(android.content.Context?)
+  override fun onActivityPaused(android.app.Activity)
+  override fun onActivityStarted(android.app.Activity)
+  override fun onActivityDestroyed(android.app.Activity)
+  override fun onActivitySaveInstanceState(android.app.Activity, android.os.Bundle)
+  override fun onActivityStopped(android.app.Activity)
+  override fun onActivityCreated(android.app.Activity, android.os.Bundle?)
+  override fun onActivityResumed(android.app.Activity)
+  protected fun convertToRumAttributes(android.os.Bundle?): Map<String, Any?>
+  companion object 
+class com.datadog.android.rum.tracking.ActivityViewTrackingStrategy : ActivityLifecycleTrackingStrategy, ViewTrackingStrategy
+  constructor(Boolean, ComponentPredicate<android.app.Activity> = AcceptAllActivities())
+  override fun onActivityCreated(android.app.Activity, android.os.Bundle?)
+  override fun onActivityStarted(android.app.Activity)
+  override fun onActivityResumed(android.app.Activity)
+  override fun onActivityPostResumed(android.app.Activity)
+  override fun onActivityPaused(android.app.Activity)
+  override fun onActivityDestroyed(android.app.Activity)
+interface com.datadog.android.rum.tracking.ComponentPredicate<T>
+  fun accept(T): Boolean
+  fun getViewName(T): String?
+class com.datadog.android.rum.tracking.FragmentViewTrackingStrategy : ActivityLifecycleTrackingStrategy, ViewTrackingStrategy
+  constructor(Boolean, ComponentPredicate<androidx.fragment.app.Fragment> = AcceptAllSupportFragments(), ComponentPredicate<android.app.Fragment> = AcceptAllDefaultFragment())
+  override fun onActivityStarted(android.app.Activity)
+  override fun onActivityStopped(android.app.Activity)
+class com.datadog.android.rum.tracking.MixedViewTrackingStrategy : ActivityLifecycleTrackingStrategy, ViewTrackingStrategy
+  constructor(Boolean, ComponentPredicate<android.app.Activity> = AcceptAllActivities(), ComponentPredicate<androidx.fragment.app.Fragment> = AcceptAllSupportFragments(), ComponentPredicate<android.app.Fragment> = AcceptAllDefaultFragment())
+  override fun onActivityCreated(android.app.Activity, android.os.Bundle?)
+  override fun onActivityStarted(android.app.Activity)
+  override fun onActivityResumed(android.app.Activity)
+  override fun onActivityPaused(android.app.Activity)
+  override fun onActivityStopped(android.app.Activity)
+  override fun onActivityDestroyed(android.app.Activity)
+class com.datadog.android.rum.tracking.NavigationViewTrackingStrategy : ActivityLifecycleTrackingStrategy, ViewTrackingStrategy, androidx.navigation.NavController.OnDestinationChangedListener
+  constructor(Int, Boolean)
+  override fun onActivityStarted(android.app.Activity)
+  override fun onActivityStopped(android.app.Activity)
+  override fun onActivityPaused(android.app.Activity)
+  override fun onDestinationChanged(androidx.navigation.NavController, androidx.navigation.NavDestination, android.os.Bundle?)
+  companion object 
+interface com.datadog.android.rum.tracking.TrackingStrategy
+  fun register(android.content.Context)
+  fun unregister(android.content.Context?)
+interface com.datadog.android.rum.tracking.ViewAttributesProvider
+  fun extractAttributes(android.view.View, MutableMap<String, Any?>)
+interface com.datadog.android.rum.tracking.ViewTrackingStrategy : TrackingStrategy
+open class com.datadog.android.rum.webview.RumWebChromeClient : android.webkit.WebChromeClient
+  constructor()
+  override fun onConsoleMessage(android.webkit.ConsoleMessage?): Boolean
+  companion object 
+open class com.datadog.android.rum.webview.RumWebViewClient : android.webkit.WebViewClient
+  override fun onPageStarted(android.webkit.WebView?, String?, android.graphics.Bitmap?)
+  override fun onPageFinished(android.webkit.WebView?, String?)
+  override fun onReceivedError(android.webkit.WebView?, Int, String?, String?)
+  override fun onReceivedError(android.webkit.WebView?, android.webkit.WebResourceRequest?, android.webkit.WebResourceError?)
+  override fun onReceivedHttpError(android.webkit.WebView?, android.webkit.WebResourceRequest?, android.webkit.WebResourceResponse?)
+  override fun onReceivedSslError(android.webkit.WebView?, android.webkit.SslErrorHandler?, android.net.http.SslError?)
+  companion object 
+class com.datadog.android.sqlite.DatadogDatabaseErrorHandler : android.database.DatabaseErrorHandler
+  constructor(android.database.DatabaseErrorHandler = DefaultDatabaseErrorHandler())
+  override fun onCorruption(android.database.sqlite.SQLiteDatabase)
+  companion object 
+class com.datadog.android.tracing.AndroidTracer : com.datadog.opentracing.DDTracer
+  override fun buildSpan(String): DDSpanBuilder
+  class Builder
+    fun build(): AndroidTracer
+    fun setServiceName(String): Builder
+    fun setPartialFlushThreshold(Int): Builder
+    fun addGlobalTag(String, String): Builder
+    fun setBundleWithRumEnabled(Boolean): Builder
+  companion object 
+    fun logThrowable(io.opentracing.Span, Throwable)
+    fun logErrorMessage(io.opentracing.Span, String)
+interface com.datadog.android.tracing.TracedRequestListener
+  fun onRequestIntercepted(okhttp3.Request, io.opentracing.Span, okhttp3.Response?, Throwable?)
+open class com.datadog.android.tracing.TracingInterceptor : okhttp3.Interceptor
+  constructor(List<String>, TracedRequestListener = NoOpTracedRequestListener())
+  constructor(TracedRequestListener = NoOpTracedRequestListener())
+  override fun intercept(okhttp3.Interceptor.Chain): okhttp3.Response
+  protected open fun onRequestIntercepted(okhttp3.Request, io.opentracing.Span?, okhttp3.Response?, Throwable?)
+  companion object 
+class com.datadog.tools.annotation.NoOpImplementation

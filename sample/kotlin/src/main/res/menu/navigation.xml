@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+  ~ This product includes software developed at Datadog (https://www.datadoghq.com/).
+  ~ Copyright 2016-Present Datadog, Inc.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/show_snack_bar"
+        android:icon="@drawable/ic_message_white_24dp"
+        android:title="@string/title_snackbar"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/start_foreground_service"
+        android:icon="@drawable/ic_service_white_24dp"
+        android:title="@string/title_foreground_service"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/set_user_info"
+        android:icon="@drawable/ic_user_white_24dp"
+        android:title="@string/title_user_info"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/about"
+        android:icon="@drawable/ic_info_black_24"
+        android:title="@string/title_about"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/gdpr"
+        android:icon="@drawable/ic_baseline_lock_open_24"
+        android:title="@string/title_gdpr"
+        app:showAsAction="ifRoom"
+        />
+</menu>

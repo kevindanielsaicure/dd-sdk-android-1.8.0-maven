@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+  ~ This product includes software developed at Datadog (https://www.datadoghq.com/).
+  ~ Copyright 2016-Present Datadog, Inc.
+  -->
+
+<resources>
+    <string name="app_name">Datadog Integration Tests</string>
+
+    <string name="activity_logs_end_to_end">Logs (End to End)</string>
+    <string name="activity_traces_end_to_end">Traces (End to End)</string>
+    <string name="activity_logs_profiling">Logs (Profiling)</string>
+    <string name="button1">Button1</string>
+    <string name="rum_gestures_tracking_end_to_end">Rum Gestures (End to End)</string>
+    <string name="rum_activity_view_tracking_end_to_end">Rum Activity View (End to End)</string>
+    <string name="fragment_a">Fragment A</string>
+    <string name="fragment_b">Fragment B</string>
+    <string name="fragment_c">Fragment C</string>
+</resources>

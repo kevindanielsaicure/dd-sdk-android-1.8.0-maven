@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+  ~ This product includes software developed at Datadog (https://www.datadoghq.com/).
+  ~ Copyright 2016-Present Datadog, Inc.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/nav_graph"
+            app:startDestination="@id/fragment_home">
+
+    <fragment
+        android:id="@+id/fragment_home"
+        android:name="com.datadog.android.sample.home.HomeFragment"
+        android:label="@string/title_home">
+        <action android:id="@+id/action_fragment_home_to_activity_view_pager"
+                app:destination="@id/activity_view_pager"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_logs"
+        android:name="com.datadog.android.sample.logs.LogsFragment"
+        android:label="@string/title_logs"/>
+
+
+    <fragment
+        android:id="@+id/fragment_crash"
+        android:name="com.datadog.android.sample.crash.CrashFragment"
+        android:label="@string/title_crash"/>
+
+    <fragment
+        android:id="@+id/fragment_trace"
+        android:name="com.datadog.android.sample.traces.TracesFragment"
+        android:label="@string/title_traces"/>
+
+
+    <fragment
+        android:id="@+id/fragment_webview"
+        android:name="com.datadog.android.sample.webview.WebFragment"
+        android:label="@string/title_webview"/>
+
+    <fragment
+        android:id="@+id/fragment_data_list"
+        android:name="com.datadog.android.sample.datalist.DataListFragment"
+        android:label="@string/title_data_list"/>
+
+    <fragment
+        android:id="@+id/fragment_picture"
+        android:name="com.datadog.android.sample.picture.PictureFragment"
+        android:label="@string/title_picture"/>
+
+    <fragment
+        android:id="@+id/fragment_user"
+        android:name="com.datadog.android.sample.user.UserFragment"
+        android:label="@string/title_user_info"/>
+
+    <fragment android:id="@+id/fragment_about"
+              android:name="com.datadog.android.sample.about.AboutFragment"
+              android:label="@string/title_about"/>
+    <dialog android:id="@+id/fragment_gdpr"
+              android:name="com.datadog.android.sample.gdpr.GdprDialogFragment"
+              android:label="@string/title_gdpr"/>
+
+    <activity android:id="@+id/activity_view_pager"
+              android:name="com.datadog.android.sample.ViewPagerActivity"
+              android:label="@string/title_view_pager"/>
+
+</navigation>

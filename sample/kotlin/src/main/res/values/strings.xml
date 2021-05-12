@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+  ~ This product includes software developed at Datadog (https://www.datadoghq.com/).
+  ~ Copyright 2016-Present Datadog, Inc.
+  -->
+
+<resources>
+    <string name="app_name">Datadog SDK Sample</string>
+    <string name="title_main">DD Sample</string>
+
+    <string name="title_home">Datadog Sample</string>
+    <string name="title_logs">Logs</string>
+    <string name="title_crash">Crash</string>
+    <string name="title_webview">WebView</string>
+    <string name="title_traces">"Traces"</string>
+    <string name="title_unknown">"?"</string>
+    <string name="title_data_list">Data List</string>
+    <string name="title_view_pager">View Pager</string>
+    <string name="title_snackbar">Snackbar</string>
+    <string name="title_foreground_service">Foreground service</string>
+    <string name="title_picture">Picture loading</string>
+    <string name="title_user_info">User Info</string>
+    <string name="title_about">About…</string>
+    <string name="title_gdpr">GDPR</string>
+
+    <string name="msg_native_crash">Native Crash</string>
+    <string name="msg_java_crash">Java Crash</string>
+    <string name="msg_anr">App Not Responding</string>
+    <string name="msg_async_operation">Async Operation (~5s)</string>
+    <string name="msg_network_request">Network Request (~1s)</string>
+    <string name="msg_coroutine_operation">Coroutine operations (~5s)</string>
+    <string name="msg_rum_use_cases">RUM use cases</string>
+
+    <string name="button_warning">⚠️</string>
+    <string name="button_error">🚨</string>
+    <string name="button_critical">💥</string>
+    <string name="button_anr">Simulate ANR</string>
+    <string name="button_crash">Crash</string>
+    <string name="button_async_operation">Async Operation</string>
+    <string name="button_network_request">Network Request</string>
+    <string name="button_start">Start</string>
+    <string name="button_start_404">Start 404 Request</string>
+    <string name="button_save">Save</string>
+
+    <string name="group_image_loader">Image Loader</string>
+    <string name="group_data_source">Data Source</string>
+
+    <string name="choice_coil">Coil</string>
+    <string name="choice_fresco">Fresco</string>
+    <string name="choice_glide">Glide</string>
+    <string name="choice_picasso">Picasso</string>
+    <string name="choice_realm">Realm</string>
+    <string name="choice_room">Room</string>
+    <string name="choice_sqlite">SQLite</string>
+    <string name="choice_sqldelight">SQLDelight</string>
+
+
+    <string name="foreground_service_title">Sample App Logs Foreground Service</string>
+    <string name="foreground_service_desc">Used to send logs from a different process</string>
+
+    <string name="prompt_signal_crash">Signal</string>
+
+    <string name="hint_user_id">User ID</string>
+    <string name="hint_user_name">User real name</string>
+    <string name="hint_user_email">User email</string>
+    <string name="hint_user_gender">Gender</string>
+    <string name="hint_user_age">Age</string>
+
+    <string name="load_picture">Load picture</string>
+    <string name="widget_description">Datadog Sample Widget</string>
+    <string name="add_widget">Add widget</string>
+    <string name="loading">Loading…</string>
+    <string name="load_resource">Perform http request</string>
+    <string name="set_tracking_consent">Set tracking consent</string>
+    <string name="pending">PENDING</string>
+    <string name="granted">GRANTED</string>
+    <string name="not_granted">NOT GRANTED</string>
+</resources>

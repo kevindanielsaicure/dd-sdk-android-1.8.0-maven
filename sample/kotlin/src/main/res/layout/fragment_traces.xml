@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+  ~ This product includes software developed at Datadog (https://www.datadoghq.com/).
+  ~ Copyright 2016-Present Datadog, Inc.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   tools:context=".traces.TracesFragment">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/async_operation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:text="@string/msg_async_operation"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/start_async_operation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/button_start"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/async_operation"/>
+
+    <ProgressBar
+        android:id="@+id/spinner_async"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:max="100"
+        android:min="0"
+        style="?android:attr/progressBarStyleHorizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_async_operation"
+        android:visibility="invisible"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/coroutine_operation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:text="@string/msg_coroutine_operation"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinner_async"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/start_coroutine_operation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/button_start"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/coroutine_operation"/>
+
+    <ProgressBar
+        android:id="@+id/spinner_coroutine"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        style="?android:attr/progressBarStyleHorizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_coroutine_operation"
+        android:visibility="invisible"/>
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/network_request"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:text="@string/msg_network_request"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinner_coroutine"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/start_request"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/button_start"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/network_request"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/start_404_request"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/button_start_404"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_request"/>
+
+    <ProgressBar
+        android:id="@+id/spinner_request"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:indeterminate="true"
+        android:layout_margin="8dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintEnd_toStartOf="@+id/request_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_404_request"
+        android:visibility="invisible"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/request_status"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="invisible"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toEndOf="@id/spinner_request"
+        app:layout_constraintTop_toBottomOf="@id/start_404_request"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:src="@drawable/ic_check_circle_green_24dp"
+    />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

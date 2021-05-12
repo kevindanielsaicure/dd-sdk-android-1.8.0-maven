@@ -1,0 +1,258 @@
+/*
+ * Unless explicitly stated otherwise all files in this repository are licensed under the Apache License Version 2.0.
+ * This product includes software developed at Datadog (https://www.datadoghq.com/).
+ * Copyright 2016-Present Datadog, Inc.
+ */
+
+package com.datadog.android.core.internal
+
+import android.app.ActivityManager
+import android.content.Context
+import android.os.Build
+import android.os.Process
+import com.datadog.android.DatadogEndpoint
+import com.datadog.android.core.configuration.BatchSize
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.core.configuration.UploadFrequency
+import com.datadog.android.core.internal.domain.FilePersistenceConfig
+import com.datadog.android.core.internal.net.FirstPartyHostDetector
+import com.datadog.android.core.internal.net.GzipRequestInterceptor
+import com.datadog.android.core.internal.net.info.BroadcastReceiverNetworkInfoProvider
+import com.datadog.android.core.internal.net.info.CallbackNetworkInfoProvider
+import com.datadog.android.core.internal.net.info.NetworkInfoProvider
+import com.datadog.android.core.internal.net.info.NoOpNetworkInfoProvider
+import com.datadog.android.core.internal.privacy.ConsentProvider
+import com.datadog.android.core.internal.privacy.NoOpConsentProvider
+import com.datadog.android.core.internal.privacy.TrackingConsentProvider
+import com.datadog.android.core.internal.system.BroadcastReceiverSystemInfoProvider
+import com.datadog.android.core.internal.system.NoOpSystemInfoProvider
+import com.datadog.android.core.internal.system.SystemInfoProvider
+import com.datadog.android.core.internal.time.KronosTimeProvider
+import com.datadog.android.core.internal.time.LoggingSyncListener
+import com.datadog.android.core.internal.time.NoOpTimeProvider
+import com.datadog.android.core.internal.time.TimeProvider
+import com.datadog.android.log.internal.user.DatadogUserInfoProvider
+import com.datadog.android.log.internal.user.MutableUserInfoProvider
+import com.datadog.android.log.internal.user.NoOpMutableUserInfoProvider
+import com.datadog.android.privacy.TrackingConsent
+import com.lyft.kronos.AndroidClockFactory
+import com.lyft.kronos.KronosClock
+import java.lang.ref.WeakReference
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.LinkedBlockingDeque
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import okhttp3.ConnectionSpec
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+
+internal object CoreFeature {
+
+    // region Constants
+
+    internal val NETWORK_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(45)
+    private val THREAD_POOL_MAX_KEEP_ALIVE_MS = TimeUnit.SECONDS.toMillis(5)
+    private const val CORE_DEFAULT_POOL_SIZE = 1 // Only one thread will be kept alive
+
+    // endregion
+
+    internal val initialized = AtomicBoolean(false)
+    internal var contextRef: WeakReference<Context?> = WeakReference(null)
+
+    internal var firstPartyHostDetector = FirstPartyHostDetector(emptyList())
+    internal var networkInfoProvider: NetworkInfoProvider = NoOpNetworkInfoProvider()
+    internal var systemInfoProvider: SystemInfoProvider = NoOpSystemInfoProvider()
+    internal var timeProvider: TimeProvider = NoOpTimeProvider()
+    internal var trackingConsentProvider: ConsentProvider = NoOpConsentProvider()
+    internal var userInfoProvider: MutableUserInfoProvider = NoOpMutableUserInfoProvider()
+
+    internal var okHttpClient: OkHttpClient = OkHttpClient.Builder().build()
+    internal lateinit var kronosClock: KronosClock
+
+    internal var clientToken: String = ""
+    internal var packageName: String = ""
+    internal var packageVersion: String = ""
+    internal var serviceName: String = ""
+    internal var rumApplicationId: String? = null
+    internal var isMainProcess: Boolean = true
+    internal var envName: String = ""
+    internal var variant: String = ""
+    internal var batchSize: BatchSize = BatchSize.MEDIUM
+    internal var uploadFrequency: UploadFrequency = UploadFrequency.AVERAGE
+
+    internal lateinit var uploadExecutorService: ScheduledThreadPoolExecutor
+    internal lateinit var persistenceExecutorService: ExecutorService
+
+    fun initialize(
+        appContext: Context,
+        credentials: Credentials,
+        configuration: Configuration.Core,
+        consent: TrackingConsent
+    ) {
+        if (initialized.get()) {
+            return
+        }
+
+        readConfigurationSettings(configuration)
+        readApplicationInformation(appContext, credentials)
+        resolveIsMainProcess(appContext)
+        initializeClockSync(appContext)
+        setupInfoProviders(appContext, consent)
+        setupOkHttpClient(configuration.needsClearTextHttp)
+        firstPartyHostDetector.addKnownHosts(configuration.firstPartyHosts)
+        setupExecutors()
+
+        initialized.set(true)
+    }
+
+    fun stop() {
+        if (initialized.get()) {
+            contextRef.get()?.let {
+                networkInfoProvider.unregister(it)
+                systemInfoProvider.unregister(it)
+            }
+            contextRef.clear()
+
+            trackingConsentProvider.unregisterAllCallbacks()
+
+            cleanupApplicationInfo()
+            cleanupProviders()
+            shutDownExecutors()
+            initialized.set(false)
+        }
+    }
+
+    fun buildFilePersistenceConfig(): FilePersistenceConfig {
+        return FilePersistenceConfig(
+            recentDelayMs = batchSize.windowDurationMs
+        )
+    }
+
+    // region Internal
+
+    private fun initializeClockSync(appContext: Context) {
+        kronosClock = AndroidClockFactory.createKronosClock(
+            appContext,
+            ntpHosts = listOf(
+                DatadogEndpoint.NTP_0,
+                DatadogEndpoint.NTP_1,
+                DatadogEndpoint.NTP_2,
+                DatadogEndpoint.NTP_3
+            ),
+            cacheExpirationMs = TimeUnit.MINUTES.toMillis(30),
+            minWaitTimeBetweenSyncMs = TimeUnit.MINUTES.toMillis(5),
+            syncListener = LoggingSyncListener()
+        ).apply { syncInBackground() }
+    }
+
+    private fun readApplicationInformation(appContext: Context, credentials: Credentials) {
+        packageName = appContext.packageName
+        packageVersion = appContext.packageManager.getPackageInfo(packageName, 0).let {
+            it.versionName ?: it.versionCode.toString()
+        }
+        clientToken = credentials.clientToken
+        serviceName = credentials.serviceName ?: appContext.packageName
+        rumApplicationId = credentials.rumApplicationId
+        envName = credentials.envName
+        variant = credentials.variant
+        contextRef = WeakReference(appContext)
+    }
+
+    private fun readConfigurationSettings(configuration: Configuration.Core) {
+        batchSize = configuration.batchSize
+        uploadFrequency = configuration.uploadFrequency
+    }
+
+    private fun setupInfoProviders(appContext: Context, consent: TrackingConsent) {
+        // Time Provider
+        timeProvider = KronosTimeProvider(kronosClock)
+
+        // System Info Provider
+        systemInfoProvider = BroadcastReceiverSystemInfoProvider()
+        systemInfoProvider.register(appContext)
+
+        // Network Info Provider
+        networkInfoProvider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            CallbackNetworkInfoProvider()
+        } else {
+            BroadcastReceiverNetworkInfoProvider()
+        }
+        networkInfoProvider.register(appContext)
+
+        // User Info Provider
+        userInfoProvider = DatadogUserInfoProvider()
+
+        // Tracking Consent Provider
+        trackingConsentProvider = TrackingConsentProvider(consent)
+    }
+
+    private fun setupOkHttpClient(needsClearTextHttp: Boolean) {
+        val connectionSpec = when {
+            needsClearTextHttp -> ConnectionSpec.CLEARTEXT
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> ConnectionSpec.RESTRICTED_TLS
+            else -> ConnectionSpec.MODERN_TLS
+        }
+
+        okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(GzipRequestInterceptor())
+            .callTimeout(NETWORK_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+            .writeTimeout(NETWORK_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+            .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+            .connectionSpecs(listOf(connectionSpec))
+            .build()
+    }
+
+    private fun setupExecutors() {
+        uploadExecutorService = ScheduledThreadPoolExecutor(CORE_DEFAULT_POOL_SIZE)
+        persistenceExecutorService = ThreadPoolExecutor(
+            CORE_DEFAULT_POOL_SIZE,
+            Runtime.getRuntime().availableProcessors(),
+            THREAD_POOL_MAX_KEEP_ALIVE_MS,
+            TimeUnit.MILLISECONDS,
+            LinkedBlockingDeque()
+        )
+    }
+
+    private fun resolveIsMainProcess(appContext: Context) {
+        val currentProcessId = Process.myPid()
+        val manager = appContext.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        val currentProcess = manager?.runningAppProcesses?.firstOrNull {
+            it.pid == currentProcessId
+        }
+        isMainProcess = if (currentProcess == null) {
+            true
+        } else {
+            appContext.packageName == currentProcess.processName
+        }
+    }
+
+    private fun shutDownExecutors() {
+        uploadExecutorService.shutdownNow()
+        persistenceExecutorService.shutdownNow()
+    }
+
+    private fun cleanupApplicationInfo() {
+        clientToken = ""
+        packageName = ""
+        packageVersion = ""
+        serviceName = ""
+        rumApplicationId = null
+        isMainProcess = true
+        envName = ""
+        variant = ""
+    }
+
+    private fun cleanupProviders() {
+        firstPartyHostDetector = FirstPartyHostDetector(emptyList())
+        networkInfoProvider = NoOpNetworkInfoProvider()
+        systemInfoProvider = NoOpSystemInfoProvider()
+        timeProvider = NoOpTimeProvider()
+        trackingConsentProvider = NoOpConsentProvider()
+        userInfoProvider = NoOpMutableUserInfoProvider()
+    }
+
+    // endregion
+}
